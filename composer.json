@@ -1,0 +1,20 @@
+{
+	"name": "modgen/recommender-data-parser",
+	"description": "Data2API File parser",
+	"homepage": "http://modgen.net",
+    "author": "Mirek Ratman",
+    "copyright": "Modgen s.r.o.",
+    "license": "Modgen s.r.o.",
+	"repositories": [],
+    "version" : "1.0.0",
+    "repositories": [
+      {
+        "type": "vcs",
+        "url": "https://github.com/creoLIFE/modgen-recommender-api-client.git"
+      }
+    ],
+    "require": {
+        "php"                           : ">=5.3.0",
+        "modgen/recommender-api-client" : "1.0.*"
+    }
+}

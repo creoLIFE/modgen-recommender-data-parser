@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database>
+    <items>
+        <item id="item-350" name="Jizdni kolo" description="Sahodlouhy popis produktu" price="7500" />
+        <item id="item-351" name="Zimni bunda" description="Nejaky jiny popis" price="2000" />
+    </items>
+    <purchases>
+        <item itemId="item-350" userId="user-314159" timestamp="2014-05-13 10:45:21" />
+        <item itemId="item-351" userId="user-314159" timestamp="2015-03-01 12:35:46" />
+    </purchases>
+</database>
