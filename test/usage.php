@@ -11,8 +11,8 @@ require __DIR__ . "/../src/loader.php";
 
 $fileName = './data/input.xml';
 
-$db = 'shopexpo-test';
-$key = 'DyioS5vct4fyqbjjr7Yno8dUFALYjAZe0JP3yR65aCNdtbjk92F9gxU1yDAVR7QS';
+$db = '';
+$key = '';
 $classApiClient = new \Recommender\Api\Client($db, $key);
 $classApiClient->setDebug(true);
 $classParser = new Recommender\Data\Parser($fileName);
