@@ -18,23 +18,27 @@
 
 namespace Recommender\Data;
 
-use \Recommender\Data\ContentTypeParsers\ModgenXml;
+use Recommender\Data\ContentTypeParsers\ModgenXml;
+use Recommender\Api\Client;
+use Recommender\Data\ContentTypeParsers\ModgenCsv;
 
-class Parser{
+class Parser
+{
 
     /**
-     * Class constructor
+     * Method will parse Modgen XML data file
      * @param [string] $fileName - path to file to parse
-     * @param \Recommender\Api\Client $apiItems - instance of Api Client
+     * @param Client $apiItems - instance of Api Client
      */
-    public function parseModgenXml($fileName, \Recommender\Api\Client $apiClient) {
-        $reader  = new \XMLReader();
+    public function parseModgenXml($fileName, Client $apiClient)
+    {
+        $reader = new \XMLReader();
 
         $reader->open($fileName);
         $items = new ModgenXml($reader, 'items');
         foreach ($items as $item) {
             foreach ($item as $el) {
-                $apiClient->addProduct( current($el), 'id' );
+                $apiClient->addProduct(current($el), 'id');
             }
         }
 
@@ -42,8 +46,41 @@ class Parser{
         $purchases = new ModgenXml($reader, 'purchases');
         foreach ($purchases as $item) {
             foreach ($item as $el) {
-                $apiClient->addPurchases( current($el) );
+                $apiClient->addPurchases(current($el));
             }
         }
     }
+
+    /**
+     * Method will parse Modgen XML data file
+     * @param [string] $fileName - path to file to parse
+     * @param Client $apiItems - instance of Api Client
+     * @param array $structure - Structure definition of CSV
+     */
+    public function parseCsvProducts($fileName, Client $apiClient, $structure = array(), $getStructureFromHeader = false)
+    {
+        $csv = new ModgenCsv($fileName, $structure);
+        foreach ($csv->getCsv() as $key => $data) {
+            //print_r($data);
+            //print_r('-----<br><br>');
+            $apiClient->addProduct($data, 'id');
+        };
+    }
+
+    /**
+     * Method will parse Modgen XML data file
+     * @param [string] $fileName - path to file to parse
+     * @param Client $apiItems - instance of Api Client
+     */
+    public function parseCsvPurchases($fileName, Client $apiClient, $structure = array(), $getStructureFromHeader = false)
+    {
+        $csv = new ModgenCsv($fileName, $structure);
+        foreach ($csv->getCsv() as $key => $data) {
+            //print_r($data);
+            //print_r('-----<br><br>');
+            $apiClient->addPurchases($data, 'id');
+        };
+    }
+
+
 }
