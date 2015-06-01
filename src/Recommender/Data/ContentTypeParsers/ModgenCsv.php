@@ -7,7 +7,7 @@
  */
 namespace Recommender\Data\ContentTypeParsers;
 
-use League\Csv\Reader;
+use Recommender\Api\Client;
 
 class ModgenCsv
 {
@@ -93,15 +93,24 @@ class ModgenCsv
     /**
      * Method will parse stream to CSV
      */
-    public function addLine($line, array $structure = array())
+    public function addLine($line, array $structure = array(), Client $apiClient, $clientMethod)
     {
-        $firstEl = current(explode($this->getDelimeter(), substr($line, 0,11) ));
+        $firstEl = current(explode($this->getDelimeter(), substr($line, 0, 11)));
         $firstEl = trim($firstEl, '"');
         $firstEl = trim($firstEl, '\'');
 
         if ((int)$firstEl) {
-            if( !self::isLineEmpty() ){
-                $this->addToCsv(self::parseCsvLine($this->getLine(),$structure));
+            if (!self::isLineEmpty()) {
+                switch ($clientMethod) {
+                    case 'addPurchase':
+                        $apiClient->addPurchase(self::parseCsvLine($this->getLine(), $structure));
+                        break;
+                    case 'addProduct':
+                        $apiClient->addProduct(self::parseCsvLine($this->getLine(), $structure), 'id');
+                        break;
+                }
+
+                //$this->addToCsv(self::parseCsvLine($this->getLine(),$structure));
             }
             $this->setLine($line);
 
@@ -114,14 +123,14 @@ class ModgenCsv
      * @var string $fileName - file to read
      * @var array $structure - file structure to apply
      */
-    public function __construct($fileName, array $structure = array())
+    public function __construct($fileName, array $structure = array(), Client $apiClient, $clientMethod)
     {
         if (!ini_get("auto_detect_line_endings")) {
             ini_set("auto_detect_line_endings", '1');
         }
 
         foreach (file($fileName, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
-            self::addLine($line, $structure);
+            self::addLine($line, $structure, $apiClient, $clientMethod);
         }
     }
 

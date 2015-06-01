@@ -59,12 +59,12 @@ class Parser
      */
     public function parseCsvProducts($fileName, Client $apiClient, $structure = array(), $getStructureFromHeader = false)
     {
-        $csv = new ModgenCsv($fileName, $structure);
-        foreach ($csv->getCsv() as $key => $data) {
+        $csv = new ModgenCsv($fileName, $structure, $apiClient, 'addProduct');
+        //foreach ($csv->getCsv() as $key => $data) {
             //print_r($data);
             //print_r('-----<br><br>');
-            $apiClient->addProduct($data, 'id');
-        };
+            //$apiClient->addProduct($data, 'id');
+        //};
     }
 
     /**
@@ -74,12 +74,12 @@ class Parser
      */
     public function parseCsvPurchases($fileName, Client $apiClient, $structure = array(), $getStructureFromHeader = false)
     {
-        $csv = new ModgenCsv($fileName, $structure);
-        foreach ($csv->getCsv() as $key => $data) {
+        $csv = new ModgenCsv($fileName, $structure, $apiClient, 'addPurchase');
+        //foreach ($csv->getCsv() as $key => $data) {
             //print_r($data);
             //print_r('-----<br><br>');
-            $apiClient->addPurchases($data, 'id');
-        };
+            //$apiClient->addPurchase($data);
+        //};
     }
 
 

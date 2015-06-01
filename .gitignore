@@ -1,6 +1,6 @@
 .idea/*
 vendor/*
 report/*
-/test/tmp/*
+/test/data/*
 composer.lock
 composer.phar
