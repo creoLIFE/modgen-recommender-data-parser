@@ -17,14 +17,35 @@ class ModgenCsv
     private $delimeter = ';';
 
     /*
-     * @var string - Modgen CSV
+     * @var array - Modgen API Client responses
      */
-    private $csv = array();
+    private $response = array();
 
     /*
      * @var string - CSV line
      */
     private $line = '';
+
+    /*
+ * @var boolean
+ */
+    private $debug = false;
+
+    /**
+     * @return boolean
+     */
+    public function isDebug()
+    {
+        return $this->debug;
+    }
+
+    /**
+     * @param boolean $debug
+     */
+    public function setDebug($debug)
+    {
+        $this->debug = $debug;
+    }
 
     /**
      * @return string
@@ -45,17 +66,28 @@ class ModgenCsv
     /**
      * @return array
      */
-    public function getCsv()
+    public function getResponse()
     {
-        return $this->csv;
+        return $this->response;
     }
 
     /**
-     * @param array $csv
+     * @param array $response
      */
-    public function setCsv($csv)
+    public function setResponse($response)
     {
-        $this->csv = $csv;
+        $this->response = $response;
+    }
+
+    /**
+     * @param array $response
+     */
+    public function addResponse($id, $response)
+    {
+        $this->response[] = array(
+            'id' => $id,
+            'response' => $response
+        );
     }
 
     /**
@@ -101,15 +133,20 @@ class ModgenCsv
 
         if ((int)$firstEl) {
             if (!self::isLineEmpty()) {
+                $parsedLine = self::parseCsvLine($this->getLine(), $structure);
                 switch ($clientMethod) {
                     case 'addPurchase':
-                        $apiClient->addPurchase(self::parseCsvLine($this->getLine(), $structure));
+                        $response = $apiClient->addPurchase($parsedLine);
                         break;
                     case 'addProduct':
-                        $apiClient->addProduct(self::parseCsvLine($this->getLine(), $structure), 'id');
+                        $response = $apiClient->addProduct($parsedLine, 'id');
                         break;
                 }
 
+                print_r($response);
+                //self::addResponse(json_encode($parsedLine), $response);
+
+                //Discontinued
                 //$this->addToCsv(self::parseCsvLine($this->getLine(),$structure));
             }
             $this->setLine($line);
@@ -132,6 +169,8 @@ class ModgenCsv
         foreach (file($fileName, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
             self::addLine($line, $structure, $apiClient, $clientMethod);
         }
+
+        return self::getResponse();
     }
 
     /**

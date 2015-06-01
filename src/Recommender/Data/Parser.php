@@ -25,6 +25,27 @@ use Recommender\Data\ContentTypeParsers\ModgenCsv;
 class Parser
 {
 
+    /*
+     * @var boolean
+     */
+    private $debug = false;
+
+    /**
+     * @return boolean
+     */
+    public function isDebug()
+    {
+        return $this->debug;
+    }
+
+    /**
+     * @param boolean $debug
+     */
+    public function setDebug($debug)
+    {
+        $this->debug = $debug;
+    }
+
     /**
      * Method will parse Modgen XML data file
      * @param [string] $fileName - path to file to parse
@@ -46,7 +67,7 @@ class Parser
         $purchases = new ModgenXml($reader, 'purchases');
         foreach ($purchases as $item) {
             foreach ($item as $el) {
-                $apiClient->addPurchases(current($el));
+                $apiClient->addPurchase(current($el));
             }
         }
     }
@@ -57,9 +78,10 @@ class Parser
      * @param Client $apiItems - instance of Api Client
      * @param array $structure - Structure definition of CSV
      */
-    public function parseCsvProducts($fileName, Client $apiClient, $structure = array(), $getStructureFromHeader = false)
+    public function parseCsvProducts($fileName, Client $apiClient, array $structure = array())
     {
-        $csv = new ModgenCsv($fileName, $structure, $apiClient, 'addProduct');
+        $modgenCsv = new ModgenCsv($fileName, $structure, $apiClient, 'addProduct');
+        return $result;
         //foreach ($csv->getCsv() as $key => $data) {
             //print_r($data);
             //print_r('-----<br><br>');
@@ -72,9 +94,11 @@ class Parser
      * @param [string] $fileName - path to file to parse
      * @param Client $apiItems - instance of Api Client
      */
-    public function parseCsvPurchases($fileName, Client $apiClient, $structure = array(), $getStructureFromHeader = false)
+    public function parseCsvPurchases($fileName, Client $apiClient, $structure = array())
     {
-        $csv = new ModgenCsv($fileName, $structure, $apiClient, 'addPurchase');
+        $result = new ModgenCsv($fileName, $structure, $apiClient, 'addPurchase');
+
+        return $result;
         //foreach ($csv->getCsv() as $key => $data) {
             //print_r($data);
             //print_r('-----<br><br>');
