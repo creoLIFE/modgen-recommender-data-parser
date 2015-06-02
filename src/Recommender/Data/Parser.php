@@ -30,6 +30,27 @@ class Parser
      */
     private $debug = false;
 
+    /*
+     * @var boolean
+     */
+    private $skipHeader = false;
+
+    /**
+     * @return boolean
+     */
+    public function isSkipHeader()
+    {
+        return $this->skipHeader;
+    }
+
+    /**
+     * @param boolean $skipHeader
+     */
+    public function setSkipHeader($skipHeader)
+    {
+        $this->skipHeader = $skipHeader;
+    }
+
     /**
      * @return boolean
      */
@@ -81,6 +102,7 @@ class Parser
     public function parseCsvProducts($fileName, Client $apiClient, array $structure = array())
     {
         $csv = new ModgenCsv($fileName, $structure, $apiClient, 'addProduct');
+        $csv->setSkipHeader( $this->skipHeader );
         $csv->process();
     }
 
@@ -92,6 +114,7 @@ class Parser
     public function parseCsvPurchases($fileName, Client $apiClient, $structure = array())
     {
         $csv = new ModgenCsv($fileName, $structure, $apiClient, 'addPurchase');
+        $csv->setSkipHeader( $this->skipHeader );
         $csv->process();
     }
 

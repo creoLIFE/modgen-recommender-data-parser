@@ -41,6 +41,27 @@ class ModgenCsv
     */
     private $apiMethod;
 
+    /*
+    * @var boolean
+    */
+    private $skipHeader = false;
+
+    /**
+     * @return mixed
+     */
+    public function getSkipHeader()
+    {
+        return $this->skipHeader;
+    }
+
+    /**
+     * @param mixed $skipHeader
+     */
+    public function setSkipHeader($skipHeader)
+    {
+        $this->skipHeader = $skipHeader;
+    }
+
     /**
      * @return boolean
      */
@@ -132,6 +153,19 @@ class ModgenCsv
         $this->line = $line;
     }
 
+    /**
+     * @var string $line
+     * @return boolean
+     */
+    private function detectFirstField($line)
+    {
+        $firstEl = current(explode($this->getDelimeter(), substr($line, 0, 11)));
+        $firstEl = trim($firstEl, '"');
+        $firstEl = trim($firstEl, '\'');
+        //$firstEl = preg_replace("/[^0-9]/", "", $firstEl);
+
+        return preg_match('/[a-zA-Z0-9]+/', $firstEl);
+    }
 
     /**
      * @var string $fileName - file to read
@@ -156,14 +190,14 @@ class ModgenCsv
      */
     public function addLine($line, array $structure = array())
     {
-        $firstEl = current(explode($this->getDelimeter(), substr($line, 0, 11)));
-        $firstEl = trim($firstEl, '"');
-        $firstEl = trim($firstEl, '\'');
+        if ($this->getSkipHeader() ){
+            $this->setSkipHeader(false);
+            return;
+        }
 
-        if ((int)$firstEl) {
+        if ($this->detectFirstField($line) ) {
             if (!self::isLineEmpty()) {
-                $parsedLine = self::parseCsvLine($this->getLine(), $structure);
-
+                $parsedLine = self::parseCsvLine($structure);
                 switch ($this->apiMethod) {
                     case 'addPurchase':
                         $this->apiClient->addPurchase($parsedLine);
@@ -176,7 +210,7 @@ class ModgenCsv
                 //Discontinued
                 //$this->addToCsv(self::parseCsvLine($this->getLine(),$structure));
             }
-            $this->setLine($line);
+            $this->setLine(utf8_encode($line));
 
         } else {
             $this->line .= $line;
@@ -202,10 +236,9 @@ class ModgenCsv
 
     /**
      * Method will parse CSV line
-     * @param string $line
      * @return array
      */
-    private function parseCsvLine($line, array $structure = array())
+    private function parseCsvLine(array $structure = array())
     {
         $out = array();
         $elements = str_getcsv($this->getLine(), $this->getDelimeter());
@@ -237,6 +270,7 @@ class ModgenCsv
                 $out[] = $l;
             }
         }
+
         return $out;
     }
 
