@@ -27,9 +27,19 @@ class ModgenCsv
     private $line = '';
 
     /*
- * @var boolean
- */
+    * @var boolean
+    */
     private $debug = false;
+
+    /*
+    * @var mixed
+    */
+    private $apiClient;
+
+    /*
+    * @var mixed
+    */
+    private $apiMethod;
 
     /**
      * @return boolean
@@ -122,39 +132,6 @@ class ModgenCsv
         $this->line = $line;
     }
 
-    /**
-     * Method will parse stream to CSV
-     */
-    public function addLine($line, array $structure = array(), Client $apiClient, $clientMethod)
-    {
-        $firstEl = current(explode($this->getDelimeter(), substr($line, 0, 11)));
-        $firstEl = trim($firstEl, '"');
-        $firstEl = trim($firstEl, '\'');
-
-        if ((int)$firstEl) {
-            if (!self::isLineEmpty()) {
-                $parsedLine = self::parseCsvLine($this->getLine(), $structure);
-                switch ($clientMethod) {
-                    case 'addPurchase':
-                        $response = $apiClient->addPurchase($parsedLine);
-                        break;
-                    case 'addProduct':
-                        $response = $apiClient->addProduct($parsedLine, 'id');
-                        break;
-                }
-
-                print_r($response);
-                //self::addResponse(json_encode($parsedLine), $response);
-
-                //Discontinued
-                //$this->addToCsv(self::parseCsvLine($this->getLine(),$structure));
-            }
-            $this->setLine($line);
-
-        } else {
-            $this->line .= $line;
-        }
-    }
 
     /**
      * @var string $fileName - file to read
@@ -166,11 +143,61 @@ class ModgenCsv
             ini_set("auto_detect_line_endings", '1');
         }
 
+        $this->apiClient = $apiClient;
+        $this->apiMethod = $clientMethod;
+
         foreach (file($fileName, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
-            self::addLine($line, $structure, $apiClient, $clientMethod);
+            self::addLine($line, $structure);
+        }
+    }
+
+    /**
+     * Method will parse stream to CSV
+     */
+    public function addLine($line, array $structure = array())
+    {
+        $firstEl = current(explode($this->getDelimeter(), substr($line, 0, 11)));
+        $firstEl = trim($firstEl, '"');
+        $firstEl = trim($firstEl, '\'');
+
+        if ((int)$firstEl) {
+            if (!self::isLineEmpty()) {
+                $parsedLine = self::parseCsvLine($this->getLine(), $structure);
+
+                switch ($this->apiMethod) {
+                    case 'addPurchase':
+                        $this->apiClient->addPurchase($parsedLine);
+                        break;
+                    case 'addProduct':
+                        $this->apiClient->addProduct($parsedLine, 'id');
+                        break;
+                }
+
+                //Discontinued
+                //$this->addToCsv(self::parseCsvLine($this->getLine(),$structure));
+            }
+            $this->setLine($line);
+
+        } else {
+            $this->line .= $line;
+        }
+    }
+
+
+    /**
+     * @return JSON
+     */
+    public function process()
+    {
+        $result = $this->apiClient->process();
+
+        if ($this->isDebug()) {
+            print_r(date('H:m:s', time()));
+            print_r($result);
+            print_r('<br>');
         }
 
-        return self::getResponse();
+        return $result;
     }
 
     /**

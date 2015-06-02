@@ -10,7 +10,7 @@ ERROR_REPORTING(E_ALL);
 require __DIR__ . "/../src/loader.php";
 
 print_r(ini_get('memory_limit')."\n");
-set_time_limit(600);
+set_time_limit(1200);
 date_default_timezone_set('UTC');
 
 //Data files
@@ -28,13 +28,14 @@ $csvFileProducts = './data/czc-items.csv';
 $csvFilePurchases = './data/czc-purchases.csv';
 */
 
-//$csvFileProducts = './data/slevydnes-items.csv';
-//$csvFilePurchases = './data/slevydnes-purchases.csv';
+$csvFileProducts = './data/slevydnes-items.csv';
+$csvFilePurchases = './data/slevydnes-purchases.csv';
 
 $db = 'shopexpo-test';
 $key = 'DyioS5vct4fyqbjjr7Yno8dUFALYjAZe0JP3yR65aCNdtbjk92F9gxU1yDAVR7QS';
 
 //Instance of Transport class
+//$transport = new Recommender\Api\Transport\Transport();
 $transport = new Recommender\Api\Transport\Batch();
 $transport->setBatchSize(5000);
 $transport->setDebug(true);
