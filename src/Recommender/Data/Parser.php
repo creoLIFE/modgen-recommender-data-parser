@@ -78,18 +78,22 @@ class Parser
         libxml_use_internal_errors(true);
 
         $xml = file_get_contents($fileName);
-        $encoding = mb_detect_encoding($xml, 'auto');
-        $xml = iconv($encoding,"windows-1250//ignore",$xml);
+        preg_match('/encoding="([^"]*)"/', substr($xml, 0, 100), $matches);
+        if (isset($matches[1]) && $matches[1] == 'windows-1250') {
+            $xml = iconv('windows-1250', "windows-1250//ignore", $xml);
+        }
 
         $dom = new \DOMDocument();
         $dom->recover = TRUE;
         $dom->loadXml($xml);
 
         $itemList = $dom->getElementsByTagName('items');
-        foreach($itemList as $items) {
-            foreach( $items->childNodes as $i ){
+        foreach ($itemList as $items) {
+            $productsCount = $items->childNodes->length;
+
+            foreach ($items->childNodes as $i) {
                 if ($i->hasAttributes()) {
-                    $attributes = array('id'=>'', 'name'=>'', 'description'=>'', 'price'=>0, 'available'=>true);
+                    $attributes = array('id' => '', 'name' => '', 'description' => '', 'price' => 0, 'available' => true);
                     foreach ($i->attributes as $attr) {
                         //$attributes[$attr->nodeName] = Encoding::toUTF8($attr->nodeValue);
                         $attributes[$attr->nodeName] = $attr->nodeValue;
@@ -98,34 +102,41 @@ class Parser
                     $apiClient->addProduct($attributes, 'id');
                 }
             }
+            if ($productsCount > 0) {
+                $apiClient->process();
+            }
         }
-        $apiClient->process();
+
 
         $itemList = $dom->getElementsByTagName('purchases');
-        foreach($itemList as $items) {
-            foreach( $items->childNodes as $i ){
+        foreach ($itemList as $items) {
+            $purchasesCount = $items->childNodes->length;
+
+            foreach ($items->childNodes as $i) {
                 if ($i->hasAttributes()) {
                     $send = true;
-                    $attributes = array('itemId'=>'', 'userId'=>'', 'timestamp'=>0);
+                    $attributes = array('itemId' => '', 'userId' => '', 'timestamp' => 0);
                     foreach ($i->attributes as $attr) {
                         $val = $attr->nodeValue;
-                        if( $attr->nodeName == 'userId' || $attr->nodeName == 'userid' ){
+                        if ($attr->nodeName == 'userId' || $attr->nodeName == 'userid') {
                             $val = preg_replace("/[^A-Za-z0-9 ]/", '_', $attr->nodeValue);
-                            if( empty($attr->nodeValue) ){
+                            if (empty($attr->nodeValue)) {
                                 $send = false;
                             }
                         }
                         //$attributes[$attr->nodeName] = Encoding::toUTF8($val);
                         $attributes[$attr->nodeName] = $val;
                     }
-                    if( $send ) {
+                    if ($send) {
                         //print_r($attributes)."\n";
                         $apiClient->addPurchase($attributes);
                     }
                 }
             }
+            if ($purchasesCount > 0) {
+                $apiClient->process();
+            }
         }
-        $apiClient->process();
 
         libxml_clear_errors();
     }

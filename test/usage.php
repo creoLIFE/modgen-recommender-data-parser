@@ -15,12 +15,11 @@ date_default_timezone_set('UTC');
 
 //Data files
 $xmlFileName = './data/acorde.xml';
-
-$xmlFileName = './data/palmknihy.xml';
-$xmlFileName = './data/czc.xml';
+//$xmlFileName = './data/palmknihy.xml';
+//$xmlFileName = './data/czc.xml';
 
 //!!!
-$xmlFileName = './data/shopexpo/viki/zbozi_a_nakupy.xml';
+//$xmlFileName = './data/shopexpo/viki/zbozi_a_nakupy.xml';
 
 //passed in 1:04
 //$xmlFileName = './data/shopexpo/emerx.cz/modgen.xml';
