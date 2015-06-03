@@ -21,6 +21,7 @@ namespace Recommender\Data;
 use Recommender\Data\ContentTypeParsers\ModgenXml;
 use Recommender\Api\Client;
 use Recommender\Data\ContentTypeParsers\ModgenCsv;
+use ForceUTF8\Encoding;
 
 class Parser
 {
@@ -78,7 +79,8 @@ class Parser
         //$xml = preg_replace('/=[\"\']?([\w]+)[\"\']?/','"$1',$xml);
         //$xml = $str = htmlentities($xml,ENT_QUOTES,'UTF-8');
         //$xml = preg_replace('~"true />~','"true" />',$xml);
-        $xml = utf8_encode(self::cleanupXML($xml));
+        //$xml = utf8_encode(self::cleanupXML($xml));
+        $xml = Encoding::fixUTF8($xml);
         //$xml = self::cleanupXMLExtended($xml);
         file_put_contents($fileName, $xml);
 
