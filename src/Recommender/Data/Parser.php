@@ -78,7 +78,7 @@ class Parser
 
         $dom = new \DOMDocument();
         $dom->recover = TRUE;
-        $dom->loadXml(file_get_contents($fileName), LIBXML_NOERROR);
+        $dom->load($fileName, LIBXML_NOERROR);
 
         $itemList = $dom->getElementsByTagName('items');
         foreach($itemList as $items) {
@@ -89,6 +89,7 @@ class Parser
                         //$attributes[$attr->nodeName] = Encoding::toUTF8($attr->nodeValue);
                         $attributes[$attr->nodeName] = $attr->nodeValue;
                     }
+                    //print_r($attributes)."\n";
                     $apiClient->addProduct($attributes, 'id');
                 }
             }
@@ -99,22 +100,29 @@ class Parser
         foreach($itemList as $items) {
             foreach( $items->childNodes as $i ){
                 if ($i->hasAttributes()) {
+                    $send = true;
                     $attributes = array('itemId'=>'', 'userId'=>'', 'timestamp'=>0);
                     foreach ($i->attributes as $attr) {
                         $val = $attr->nodeValue;
-                        if( $attr->nodeName == 'userId' ){
+                        if( $attr->nodeName == 'userId' || $attr->nodeName == 'userid' ){
                             $val = preg_replace("/[^A-Za-z0-9 ]/", '_', $attr->nodeValue);
+                            if( empty($attr->nodeValue) ){
+                                $send = false;
+                            }
                         }
                         //$attributes[$attr->nodeName] = Encoding::toUTF8($val);
                         $attributes[$attr->nodeName] = $val;
                     }
-                    $apiClient->addPurchase($attributes);
+                    if( $send ) {
+                        //print_r($attributes)."\n";
+                        $apiClient->addPurchase($attributes);
+                    }
                 }
             }
         }
         $apiClient->process();
 
-            //$itemList = $items->childNodes->length;
+        //$itemList = $items->childNodes->length;
 
 
 

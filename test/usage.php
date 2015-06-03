@@ -23,7 +23,7 @@ $xmlFileName = './data/czc.xml';
 $xmlFileName = './data/shopexpo/viki/zbozi_a_nakupy.xml';
 
 //passed in 1:04
-//$xmlFileName = './data/shopexpo/emerx.cz/modgen.xml';
+$xmlFileName = './data/shopexpo/emerx.cz/modgen.xml';
 
 
 
