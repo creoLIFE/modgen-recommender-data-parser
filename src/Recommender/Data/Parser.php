@@ -79,17 +79,8 @@ class Parser
         $dom->load($fileName, LIBXML_NOERROR);
         $dom->save($fileName);
 
-//        $xml = file_get_contents($fileName);
-        //$xml = preg_replace('/=[\"\']?([\w]+)[\"\']?/','"$1',$xml);
-        //$xml = $str = htmlentities($xml,ENT_QUOTES,'UTF-8');
-        //$xml = preg_replace('~"true />~','"true" />',$xml);
-        //$xml = utf8_encode(self::cleanupXML($xml));
-//        $xml = self::cleanupXMLExtended($xml);
-//        file_put_contents($fileName, $xml);
-
         $reader = new \XMLReader();
 
-        $i = 0;
         $reader->open($fileName, null, LIBXML_NOERROR);
         $items = new ModgenXml($reader, 'items');
         foreach ($items as $item) {
