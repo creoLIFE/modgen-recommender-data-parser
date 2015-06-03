@@ -21,6 +21,7 @@ namespace Recommender\Data;
 use Recommender\Data\ContentTypeParsers\ModgenXml;
 use Recommender\Api\Client;
 use Recommender\Data\ContentTypeParsers\ModgenCsv;
+use ForceUTF8\Encoding;
 
 class Parser
 {
@@ -83,8 +84,9 @@ class Parser
         foreach($itemList as $items) {
             foreach( $items->childNodes as $i ){
                 if ($i->hasAttributes()) {
-                    $attributes = array();
+                    $attributes = array('id'=>'', 'name'=>'', 'description'=>'', 'price'=>0, 'available'=>true);
                     foreach ($i->attributes as $attr) {
+                        //$attributes[$attr->nodeName] = Encoding::toUTF8($attr->nodeValue);
                         $attributes[$attr->nodeName] = $attr->nodeValue;
                     }
                     $apiClient->addProduct($attributes, 'id');
@@ -97,12 +99,13 @@ class Parser
         foreach($itemList as $items) {
             foreach( $items->childNodes as $i ){
                 if ($i->hasAttributes()) {
-                    $attributes = array();
+                    $attributes = array('itemId'=>'', 'userId'=>'', 'timestamp'=>0);
                     foreach ($i->attributes as $attr) {
                         $val = $attr->nodeValue;
                         if( $attr->nodeName == 'userId' ){
                             $val = preg_replace("/[^A-Za-z0-9 ]/", '_', $attr->nodeValue);
                         }
+                        //$attributes[$attr->nodeName] = Encoding::toUTF8($val);
                         $attributes[$attr->nodeName] = $val;
                     }
                     $apiClient->addPurchase($attributes);
