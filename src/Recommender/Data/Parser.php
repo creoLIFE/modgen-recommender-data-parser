@@ -91,6 +91,7 @@ class Parser
                 }
             }
         }
+        $apiClient->process();
 
         $itemList = $dom->getElementsByTagName('purchases');
         foreach($itemList as $items) {
@@ -108,6 +109,7 @@ class Parser
                 }
             }
         }
+        $apiClient->process();
 
             //$itemList = $items->childNodes->length;
 
