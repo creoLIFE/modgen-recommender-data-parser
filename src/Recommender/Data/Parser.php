@@ -121,7 +121,7 @@ class Parser
             }
         }
         $apiClient->process();
-        
+
         libxml_clear_errors();
         //$itemList = $items->childNodes->length;
 
