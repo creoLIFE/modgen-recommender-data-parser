@@ -76,9 +76,21 @@ class Parser
     public function parseModgenXml($fileName, Client $apiClient)
     {
         libxml_use_internal_errors(true);
+
+        $config = array(
+            'indent'     => true,
+            'input-xml'  => true,
+            'output-xml' => true,
+            'wrap'       => false);
+
+        $tidy = new tidy;
+        $tidy->parseFile($fileName, $config);
+        $tidy->cleanRepair();
+
         $dom = new \DOMDocument();
         $dom->recover = TRUE;
-        $dom->load($fileName, LIBXML_NOERROR);
+        //$dom->load($fileName, LIBXML_NOERROR);
+        $dom->loadXml($tidy);
 
         $itemList = $dom->getElementsByTagName('items');
         foreach($itemList as $items) {
