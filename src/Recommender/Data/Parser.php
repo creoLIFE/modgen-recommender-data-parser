@@ -77,20 +77,13 @@ class Parser
     {
         libxml_use_internal_errors(true);
 
-        $config = array(
-            'indent'     => true,
-            'input-xml'  => true,
-            'output-xml' => true,
-            'wrap'       => false);
-
-        $tidy = new \tidy;
-        $tidy->parseFile($fileName, $config);
-        $tidy->cleanRepair();
+        $xml = file_get_contents($fileName);
+        $xml = iconv("windows1250","windows1250//ignore",$xml);
 
         $dom = new \DOMDocument();
         $dom->recover = TRUE;
         //$dom->load($fileName, LIBXML_NOERROR);
-        $dom->loadXml($tidy);
+        $dom->loadXml($xml);
 
         $itemList = $dom->getElementsByTagName('items');
         foreach($itemList as $items) {
