@@ -74,9 +74,23 @@ class Parser
      */
     public function parseModgenXml($fileName, Client $apiClient)
     {
+        $dom = new \DOMDocument();
+        $dom->recover = TRUE;
+        $dom->load($fileName, LIBXML_NOERROR);
+        $dom->save($fileName);
+
+//        $xml = file_get_contents($fileName);
+        //$xml = preg_replace('/=[\"\']?([\w]+)[\"\']?/','"$1',$xml);
+        //$xml = $str = htmlentities($xml,ENT_QUOTES,'UTF-8');
+        //$xml = preg_replace('~"true />~','"true" />',$xml);
+        //$xml = utf8_encode(self::cleanupXML($xml));
+//        $xml = self::cleanupXMLExtended($xml);
+//        file_put_contents($fileName, $xml);
+
         $reader = new \XMLReader();
 
-        $reader->open($fileName);
+        $i = 0;
+        $reader->open($fileName, null, LIBXML_NOERROR);
         $items = new ModgenXml($reader, 'items');
         foreach ($items as $item) {
             foreach ($item as $el) {
@@ -88,9 +102,14 @@ class Parser
         $purchases = new ModgenXml($reader, 'purchases');
         foreach ($purchases as $item) {
             foreach ($item as $el) {
-                $apiClient->addPurchase(current($el));
+                $ce = current($el);
+                $ce['userId'] = preg_replace("/[^A-Za-z0-9 ]/", '_', $ce['userId']);
+                $apiClient->addPurchase($ce);
+
             }
         }
+
+        $apiClient->process();
     }
 
     /**
@@ -102,7 +121,7 @@ class Parser
     public function parseCsvProducts($fileName, Client $apiClient, array $structure = array())
     {
         $csv = new ModgenCsv($fileName, $structure, $apiClient, 'addProduct');
-        $csv->setSkipHeader( $this->skipHeader );
+        $csv->setSkipHeader($this->skipHeader);
         $csv->process();
     }
 
@@ -114,9 +133,57 @@ class Parser
     public function parseCsvPurchases($fileName, Client $apiClient, $structure = array())
     {
         $csv = new ModgenCsv($fileName, $structure, $apiClient, 'addPurchase');
-        $csv->setSkipHeader( $this->skipHeader );
+        $csv->setSkipHeader($this->skipHeader);
         $csv->process();
     }
 
+    private function cleanupXML($xml)
+    {
+        return str_replace('><', ">\n<", $xml);
+    }
 
+    private function cleanupXMLExtended($xml)
+    {
+        $xmlOut = '';
+        $inTag = false;
+        $xmlLen = strlen($xml);
+        for ($i = 0; $i < $xmlLen; ++$i) {
+            $char = $xml[$i];
+            // $nextChar = $xml[$i+1];
+            switch ($char) {
+                case '<':
+                    if (!$inTag) {
+                        // Seek forward for the next tag boundry
+                        for ($j = $i + 1; $j < $xmlLen; ++$j) {
+                            $nextChar = $xml[$j];
+                            switch ($nextChar) {
+                                case '<':  // Means a < in text
+                                    $char = htmlentities($char);
+                                    break 2;
+                                case '>':  // Means we are in a tag
+                                    $inTag = true;
+                                    break 2;
+                            }
+                        }
+                    } else {
+                        $char = htmlentities($char);
+                    }
+                    break;
+                case '>':
+                    if (!$inTag) {  // No need to seek ahead here
+                        $char = htmlentities($char);
+                    } else {
+                        $inTag = false;
+                    }
+                    break;
+                default:
+                    if (!$inTag) {
+                        $char = htmlentities($char);
+                    }
+                    break;
+            }
+            $xmlOut .= $char;
+        }
+        return $xmlOut;
+    }
 }

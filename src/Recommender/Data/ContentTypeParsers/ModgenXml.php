@@ -25,6 +25,6 @@ class ModgenXml extends \XMLElementIterator {
      * @return SimpleXMLElement
      */
     public function current() {
-        return simplexml_load_string( $this->reader->readOuterXml() );
+        return simplexml_load_string( $this->reader->readOuterXml(), null, LIBXML_PARSEHUGE );
     }
 }

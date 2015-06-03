@@ -23,7 +23,7 @@ $xmlFileName = './data/czc.xml';
 $xmlFileName = './data/shopexpo/viki/zbozi_a_nakupy.xml';
 
 //passed in 1:04
-$xmlFileName = './data/shopexpo/emerx.cz/modgen.xml';
+//$xmlFileName = './data/shopexpo/emerx.cz/modgen.xml';
 
 
 
@@ -34,14 +34,14 @@ $csvFileProducts = './data/goout-items.csv';
 $csvFilePurchases = './data/goout-purchases.csv';
 //$csvFileProducts = './data/czc-items.csv';
 //$csvFilePurchases = './data/czc-purchases.csv';
-//$csvFileProducts = './data/slevydnes-items.csv';
-//$csvFilePurchases = './data/slevydnes-purchases.csv';
+$csvFileProducts = './data/slevydnes-items.csv';
+$csvFilePurchases = './data/slevydnes-purchases.csv';
 
 
 //$csvFileProducts = './data/shopexpo/setos/iSpace_Items.csv';
 //$csvFilePurchases = './data/shopexpo/setos/iSpace_Purchases.csv';
-$csvFileProducts = './data/shopexpo/sporilek.cz/product.csv';
-$csvFilePurchases = './data/shopexpo/sporilek.cz/order_items.csv';
+//$csvFileProducts = './data/shopexpo/sporilek.cz/product.csv';
+//$csvFilePurchases = './data/shopexpo/sporilek.cz/order_items.csv';
 
 
 $db = 'shopexpo-test';
@@ -50,15 +50,15 @@ $key = 'DyioS5vct4fyqbjjr7Yno8dUFALYjAZe0JP3yR65aCNdtbjk92F9gxU1yDAVR7QS';
 //Instance of Transport class
 //$transport = new Recommender\Api\Transport\Transport();
 $transport = new Recommender\Api\Transport\Batch();
-$transport->setBatchSize(10000);
+$transport->setBatchSize(500);
 $transport->setDebug(true);
-//$transport->setBatchFileStorePath(__DIR__.'/store/');
+$transport->setBatchFileStorePath(__DIR__.'/store/');
 
 
 //Instance of API Client
 $classApiClient = new \Recommender\Api\Client('http://rapi-dev.modgen.net', $db, $key, $transport);
 $classApiClient->deleteDb();
-$classApiClient->setDebug(false);
+$classApiClient->setDebug(true);
 
 //Instance of parser
 $classParser = new Recommender\Data\Parser();
@@ -71,9 +71,10 @@ $timerStart = time();
 
 
 //Parsing XML
-//$classParser->parseModgenXml($xmlFileName,$classApiClient);
+$classParser->parseModgenXml($xmlFileName,$classApiClient);
 
 //Parsing CSV
+/*
 $classParser->setSkipHeader(true);
 $classParser->parseCsvProducts(
     $csvFileProducts,
@@ -87,6 +88,7 @@ $classParser->parseCsvPurchases(
     $classApiClient,
     array('itemId', 'userId', 'timestamp')
 );
+*/
 
 //print_r( $classParser->getResponse() );
 
