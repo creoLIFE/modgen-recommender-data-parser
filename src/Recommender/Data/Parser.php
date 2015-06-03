@@ -21,7 +21,6 @@ namespace Recommender\Data;
 use Recommender\Data\ContentTypeParsers\ModgenXml;
 use Recommender\Api\Client;
 use Recommender\Data\ContentTypeParsers\ModgenCsv;
-use ForceUTF8\Encoding;
 
 class Parser
 {
@@ -75,6 +74,48 @@ class Parser
      */
     public function parseModgenXml($fileName, Client $apiClient)
     {
+
+        $dom = new \DOMDocument();
+        $dom->recover = TRUE;
+        $dom->loadXml(file_get_contents($fileName), LIBXML_NOERROR);
+
+        $itemList = $dom->getElementsByTagName('items');
+        foreach($itemList as $items) {
+            foreach( $items->childNodes as $i ){
+                if ($i->hasAttributes()) {
+                    $attributes = array();
+                    foreach ($i->attributes as $attr) {
+                        $attributes[$attr->nodeName] = $attr->nodeValue;
+                    }
+                    $apiClient->addProduct($attributes, 'id');
+                }
+            }
+        }
+
+        $itemList = $dom->getElementsByTagName('purchases');
+        foreach($itemList as $items) {
+            foreach( $items->childNodes as $i ){
+                if ($i->hasAttributes()) {
+                    $attributes = array();
+                    foreach ($i->attributes as $attr) {
+                        $val = $attr->nodeValue;
+                        if( $attr->nodeName == 'userId' ){
+                            $val = preg_replace("/[^A-Za-z0-9 ]/", '_', $attr->nodeValue);
+                        }
+                        $attributes[$attr->nodeName] = $val;
+                    }
+                    $apiClient->addPurchase($attributes);
+                }
+            }
+        }
+
+            //$itemList = $items->childNodes->length;
+
+
+
+        //$dom->save($fileName);
+
+        /*
         $xml = file_get_contents($fileName);
         //$xml = preg_replace('/=[\"\']?([\w]+)[\"\']?/','"$1',$xml);
         //$xml = $str = htmlentities($xml,ENT_QUOTES,'UTF-8');
@@ -83,11 +124,10 @@ class Parser
         $xml = Encoding::fixUTF8($xml);
         //$xml = self::cleanupXMLExtended($xml);
         file_put_contents($fileName, $xml);
+        */
 
-        $dom = new \DOMDocument();
-        $dom->recover = TRUE;
-        $dom->load($fileName, LIBXML_NOERROR);
-        $dom->save($fileName);
+        /*
+        exec( 'tidy -xml -o '.$fileName.' -utf8 -f '. $fileName);
 
         $reader = new \XMLReader();
 
@@ -95,7 +135,7 @@ class Parser
         $items = new ModgenXml($reader, 'items');
         foreach ($items as $item) {
             foreach ($item as $el) {
-                $apiClient->addProduct(current($el), 'id');
+                //$apiClient->addProduct(current($el), 'id');
             }
         }
         $apiClient->process();
@@ -107,10 +147,11 @@ class Parser
                 $ce = current($el);
                 $ce['userId'] = preg_replace("/[^A-Za-z0-9 ]/", '_', $ce['userId']);
                 $apiClient->addPurchase($ce);
-
             }
         }
         $apiClient->process();
+        */
+
     }
 
     /**
