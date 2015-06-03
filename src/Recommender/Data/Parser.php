@@ -78,11 +78,11 @@ class Parser
         libxml_use_internal_errors(true);
 
         $xml = file_get_contents($fileName);
-        $xml = iconv("windows-1250","windows-1250//ignore",$xml);
+        $encoding = mb_detect_encoding($xml, 'auto');
+        $xml = iconv($encoding,"windows-1250//ignore",$xml);
 
         $dom = new \DOMDocument();
         $dom->recover = TRUE;
-        //$dom->load($fileName, LIBXML_NOERROR);
         $dom->loadXml($xml);
 
         $itemList = $dom->getElementsByTagName('items');
@@ -128,49 +128,6 @@ class Parser
         $apiClient->process();
 
         libxml_clear_errors();
-        //$itemList = $items->childNodes->length;
-
-
-
-        //$dom->save($fileName);
-
-        /*
-        $xml = file_get_contents($fileName);
-        //$xml = preg_replace('/=[\"\']?([\w]+)[\"\']?/','"$1',$xml);
-        //$xml = $str = htmlentities($xml,ENT_QUOTES,'UTF-8');
-        //$xml = preg_replace('~"true />~','"true" />',$xml);
-        //$xml = utf8_encode(self::cleanupXML($xml));
-        $xml = Encoding::fixUTF8($xml);
-        //$xml = self::cleanupXMLExtended($xml);
-        file_put_contents($fileName, $xml);
-        */
-
-        /*
-        exec( 'tidy -xml -o '.$fileName.' -utf8 -f '. $fileName);
-
-        $reader = new \XMLReader();
-
-        $reader->open($fileName, null, LIBXML_NOERROR);
-        $items = new ModgenXml($reader, 'items');
-        foreach ($items as $item) {
-            foreach ($item as $el) {
-                //$apiClient->addProduct(current($el), 'id');
-            }
-        }
-        $apiClient->process();
-
-        $reader->open($fileName);
-        $purchases = new ModgenXml($reader, 'purchases');
-        foreach ($purchases as $item) {
-            foreach ($item as $el) {
-                $ce = current($el);
-                $ce['userId'] = preg_replace("/[^A-Za-z0-9 ]/", '_', $ce['userId']);
-                $apiClient->addPurchase($ce);
-            }
-        }
-        $apiClient->process();
-        */
-
     }
 
     /**
