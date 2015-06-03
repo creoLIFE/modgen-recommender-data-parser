@@ -83,7 +83,7 @@ class Parser
             'output-xml' => true,
             'wrap'       => false);
 
-        $tidy = new tidy;
+        $tidy = new \tidy;
         $tidy->parseFile($fileName, $config);
         $tidy->cleanRepair();
 
