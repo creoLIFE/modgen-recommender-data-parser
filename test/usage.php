@@ -40,8 +40,8 @@ $csvFilePurchases = './data/slevydnes-purchases.csv';
 
 //$csvFileProducts = './data/shopexpo/setos/iSpace_Items.csv';
 //$csvFilePurchases = './data/shopexpo/setos/iSpace_Purchases.csv';
-//$csvFileProducts = './data/shopexpo/sporilek.cz/product.csv';
-//$csvFilePurchases = './data/shopexpo/sporilek.cz/order_items.csv';
+$csvFileProducts = './data/shopexpo/sporilek.cz/product.csv';
+$csvFilePurchases = './data/shopexpo/sporilek.cz/order_items.csv';
 
 
 $db = 'shopexpo-test';
@@ -71,10 +71,9 @@ $timerStart = time();
 
 
 //Parsing XML
-$classParser->parseModgenXml($xmlFileName,$classApiClient);
+//$classParser->parseModgenXml($xmlFileName,$classApiClient);
 
 //Parsing CSV
-/*
 $classParser->setSkipHeader(true);
 $classParser->parseCsvProducts(
     $csvFileProducts,
@@ -88,7 +87,7 @@ $classParser->parseCsvPurchases(
     $classApiClient,
     array('itemId', 'userId', 'timestamp')
 );
-*/
+
 
 //print_r( $classParser->getResponse() );
 

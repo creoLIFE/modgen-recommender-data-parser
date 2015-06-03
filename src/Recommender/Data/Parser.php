@@ -78,7 +78,7 @@ class Parser
 
         $dom = new \DOMDocument();
         $dom->recover = TRUE;
-        $dom->load($fileName, LIBXML_NOERROR);
+        @$dom->load($fileName, LIBXML_NOERROR);
 
         $itemList = $dom->getElementsByTagName('items');
         foreach($itemList as $items) {
