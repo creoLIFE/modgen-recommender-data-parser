@@ -50,9 +50,9 @@ $key = 'DyioS5vct4fyqbjjr7Yno8dUFALYjAZe0JP3yR65aCNdtbjk92F9gxU1yDAVR7QS';
 //Instance of Transport class
 //$transport = new Recommender\Api\Transport\Transport();
 $transport = new Recommender\Api\Transport\Batch();
-$transport->setBatchSize(500);
+$transport->setBatchSize(10000);
 $transport->setDebug(true);
-$transport->setBatchFileStorePath(__DIR__.'/store/');
+//$transport->setBatchFileStorePath(__DIR__.'/store/');
 
 
 //Instance of API Client
