@@ -79,7 +79,6 @@ class Parser
         $dom = new \DOMDocument();
         $dom->recover = TRUE;
         $dom->load($fileName, LIBXML_NOERROR);
-        libxml_clear_errors();
 
         $itemList = $dom->getElementsByTagName('items');
         foreach($itemList as $items) {
@@ -122,7 +121,8 @@ class Parser
             }
         }
         $apiClient->process();
-
+        
+        libxml_clear_errors();
         //$itemList = $items->childNodes->length;
 
 
