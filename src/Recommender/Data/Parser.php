@@ -78,7 +78,7 @@ class Parser
         libxml_use_internal_errors(true);
 
         $xml = file_get_contents($fileName);
-        $xml = iconv("windows1250","windows1250//ignore",$xml);
+        $xml = iconv("windows-1250","windows-1250//ignore",$xml);
 
         $dom = new \DOMDocument();
         $dom->recover = TRUE;
