@@ -80,8 +80,11 @@ class Parser
         $xml = file_get_contents($fileName);
         preg_match('/encoding="([^"]*)"/', substr($xml, 0, 100), $matches);
         if (isset($matches[1]) && $matches[1] == 'windows-1250') {
+            //$xml = preg_replace('/<\?xml[^>]+\/>/im', '', $xml);
             $xml = iconv('windows-1250', "windows-1250//ignore", $xml);
+            //$xml = iconv('utf-8', "utf-8", $xml);
         }
+        $xml = self::cleanupXML($xml);
 
         $dom = new \DOMDocument();
         $dom->recover = TRUE;
@@ -96,7 +99,7 @@ class Parser
                     $attributes = array('id' => '', 'name' => '', 'description' => '', 'price' => 0, 'available' => true);
                     foreach ($i->attributes as $attr) {
                         //$attributes[$attr->nodeName] = Encoding::toUTF8($attr->nodeValue);
-                        $attributes[$attr->nodeName] = $attr->nodeValue;
+                        $attributes[$attr->nodeName] = utf8_decode($attr->nodeValue);
                     }
                     //print_r($attributes)."\n";
                     $apiClient->addProduct($attributes, 'id');
@@ -106,7 +109,6 @@ class Parser
                 $apiClient->process();
             }
         }
-
 
         $itemList = $dom->getElementsByTagName('purchases');
         foreach ($itemList as $items) {

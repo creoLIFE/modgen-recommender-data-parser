@@ -164,7 +164,14 @@ class ModgenCsv
         $firstEl = trim($firstEl, '\'');
         //$firstEl = preg_replace("/[^0-9]/", "", $firstEl);
 
-        return preg_match('/[a-zA-Z0-9]+/', $firstEl);
+        /*
+        preg_match('/[^a-zA-Z0-9]+/', $firstEl,$matches);
+        print_r('--->'. !preg_match('/[^a-zA-Z0-9]+/', $firstEl) . "\n");
+
+        print_r($matches);
+        print_r("\n");
+        */
+        return !preg_match('/[^a-zA-Z0-9]+/', $firstEl) && !empty($firstEl) ? true : false;
     }
 
     /**
@@ -198,19 +205,26 @@ class ModgenCsv
         if ($this->detectFirstField($line) ) {
             if (!self::isLineEmpty()) {
                 $parsedLine = self::parseCsvLine($structure);
-                switch ($this->apiMethod) {
-                    case 'addPurchase':
-                        $this->apiClient->addPurchase($parsedLine);
-                        break;
-                    case 'addProduct':
-                        $this->apiClient->addProduct($parsedLine, 'id');
-                        break;
-                }
+                //print_r($parsedLine['id']);
+                //if( strpos($this->getLine(), '27504')){
+                    //echo "27504";
+                //};
+                //if( $parsedLine['id'] >= '4680' && $parsedLine['id'] <= '5680') {
+                    switch ($this->apiMethod) {
+                        case 'addPurchase':
+                            $this->apiClient->addPurchase($parsedLine);
+                            break;
+                        case 'addProduct':
+                            $this->apiClient->addProduct($parsedLine, 'id');
+                            break;
+                    }
+                //}
 
                 //Discontinued
                 //$this->addToCsv(self::parseCsvLine($this->getLine(),$structure));
             }
-            $this->setLine(utf8_encode($line));
+            $this->setLine($line);
+            //$this->setLine(utf8_encode($line));
 
         } else {
             $this->line .= $line;
