@@ -36,6 +36,48 @@ class Parser
      */
     private $skipHeader = false;
 
+    /*
+     * @var string
+     */
+    private $inputEncoding = 'utf-8';
+
+    /*
+     * @var string
+     */
+    private $outputEncoding = 'utf-8';
+
+    /**
+     * @return string
+     */
+    public function getInputEncoding()
+    {
+        return $this->inputEncoding;
+    }
+
+    /**
+     * @param string $inputEncoding
+     */
+    public function setInputEncoding($inputEncoding)
+    {
+        $this->inputEncoding = $inputEncoding;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOutputEncoding()
+    {
+        return $this->outputEncoding;
+    }
+
+    /**
+     * @param string $outputEncoding
+     */
+    public function setOutputEncoding($outputEncoding)
+    {
+        $this->outputEncoding = $outputEncoding;
+    }
+
     /**
      * @return boolean
      */
@@ -70,6 +112,17 @@ class Parser
 
     /**
      * Method will parse Modgen XML data file
+     * @param string $in - input encoding
+     * @param string $out - output encoding
+     */
+    public function setEncoding($in, $out)
+    {
+        $this->setInputEncoding($in);
+        $this->setOutputEncoding($out);
+    }
+
+    /**
+     * Method will parse Modgen XML data file
      * @param [string] $fileName - path to file to parse
      * @param Client $apiItems - instance of Api Client
      */
@@ -99,9 +152,19 @@ class Parser
                 if ($i->hasAttributes()) {
                     $attributes = array('id' => '', 'name' => '', 'description' => '', 'price' => 0, 'available' => true);
                     foreach ($i->attributes as $attr) {
-                        //$attributes[$attr->nodeName] = Encoding::toUTF8($attr->nodeValue);
-                        $attributes[$attr->nodeName] = $attr->nodeValue;
-                        //$attributes[$attr->nodeName] = utf8_decode($attr->nodeValue);
+
+                        switch(strtolower($this->getInputEncoding())){
+                            case '0':
+                                $attributes[$attr->nodeName] = $attr->nodeValue;
+                                break;
+                            case 'utf-8':
+                                $attributes[$attr->nodeName] = utf8_encode($attr->nodeValue);
+                                break;
+                            default:
+                                $attributes[$attr->nodeName] = iconv($this->getInputEncoding(), $this->getOutputEncoding(), $attr->nodeValue);
+                                break;
+                        }
+                        //$attributes[$attr->nodeName] = $attr->nodeValue;
                     }
                     //print_r($attributes)."\n";
                     $apiClient->addProduct($attributes, 'id');
@@ -128,8 +191,18 @@ class Parser
                                 $send = false;
                             }
                         }
-                        //$attributes[$attr->nodeName] = Encoding::toUTF8($val);
-                        $attributes[$attr->nodeName] = $val;
+                        switch(strtolower($this->getInputEncoding())){
+                            case '0':
+                                $attributes[$attr->nodeName] = $val;
+                                break;
+                            case 'utf-8':
+                                $attributes[$attr->nodeName] = utf8_encode($val);
+                                break;
+                            default:
+                                $attributes[$attr->nodeName] = iconv($this->getInputEncoding(), $this->getOutputEncoding(), $val);
+                                break;
+                        }
+                        //$attributes[$attr->nodeName] = $val;
                     }
                     if ($send) {
                         //print_r($attributes)."\n";
@@ -154,6 +227,8 @@ class Parser
     public function parseCsvProducts($fileName, Client $apiClient, array $structure = array())
     {
         $csv = new ModgenCsv($fileName, $structure, $apiClient, 'addProduct');
+        $csv->setInputEncoding($this->getInputEncoding());
+        $csv->setOutputEncoding($this->getOutputEncoding());
         $csv->setSkipHeader($this->skipHeader);
         $csv->process();
     }

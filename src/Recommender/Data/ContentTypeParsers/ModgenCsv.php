@@ -46,6 +46,48 @@ class ModgenCsv
     */
     private $skipHeader = false;
 
+    /*
+ * @var string
+ */
+    private $inputEncoding = 'utf-8';
+
+    /*
+     * @var string
+     */
+    private $outputEncoding = 'utf-8';
+
+    /**
+     * @return string
+     */
+    public function getInputEncoding()
+    {
+        return $this->inputEncoding;
+    }
+
+    /**
+     * @param string $inputEncoding
+     */
+    public function setInputEncoding($inputEncoding)
+    {
+        $this->inputEncoding = $inputEncoding;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOutputEncoding()
+    {
+        return $this->outputEncoding;
+    }
+
+    /**
+     * @param string $outputEncoding
+     */
+    public function setOutputEncoding($outputEncoding)
+    {
+        $this->outputEncoding = $outputEncoding;
+    }
+
     /**
      * @return mixed
      */
@@ -202,6 +244,17 @@ class ModgenCsv
             return;
         }
 
+        switch(strtolower($this->getInputEncoding())){
+            case '0':
+                break;
+            case 'utf-8':
+                $line = utf8_encode($line);
+                break;
+            default:
+                $line = iconv($this->getInputEncoding(), $this->getOutputEncoding(), $line);
+                break;
+        }
+
         if ($this->detectFirstField($line) ) {
             if (!self::isLineEmpty()) {
                 $parsedLine = self::parseCsvLine($structure);
@@ -224,7 +277,7 @@ class ModgenCsv
                 //$this->addToCsv(self::parseCsvLine($this->getLine(),$structure));
             }
             //$this->setLine($line);
-            $this->setLine(utf8_encode($line));
+            $this->setLine($line);
 
         } else {
             $this->line .= $line;

@@ -61,6 +61,8 @@ $classApiClient->setDebug(false);
 
 //Instance of parser
 $classParser = new Recommender\Data\Parser();
+$classParser->setInputEncoding('0');
+$classParser->setOutputEncoding('utf-8');
 $classParser->setDebug(false);
 
 //Set start time
@@ -70,8 +72,8 @@ $timerStart = time();
 
 
 //Parsing XML
-//$classParser->parseModgenXml($xmlFileName,$classApiClient);
-
+$classParser->parseModgenXml($xmlFileName,$classApiClient);
+die();
 //Parsing CSV
 
 $classParser->setSkipHeader(true);
