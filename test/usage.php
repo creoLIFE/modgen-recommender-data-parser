@@ -22,7 +22,7 @@ $xmlFileName = './data/acorde.xml';
 $xmlFileName = './data/shopexpo/viki/zbozi_a_nakupy.xml';
 
 //passed in 1:04
-//$xmlFileName = './data/shopexpo/emerx.cz/modgen.xml';
+$xmlFileName = './data/shopexpo/emerx.cz/modgen.xml';
 
 
 
@@ -37,8 +37,8 @@ $csvFilePurchases = './data/goout-purchases.csv';
 //$csvFilePurchases = './data/slevydnes-purchases.csv';
 
 
-//$csvFileProducts = './data/shopexpo/setos/iSpace_Items.csv';
-//$csvFilePurchases = './data/shopexpo/setos/iSpace_Purchases.csv';
+$csvFileProducts = './data/shopexpo/setos/iSpace_Items.csv';
+$csvFilePurchases = './data/shopexpo/setos/iSpace_Purchases.csv';
 $csvFileProducts = './data/shopexpo/sporilek.cz/product.csv';
 $csvFilePurchases = './data/shopexpo/sporilek.cz/order_items.csv';
 
@@ -49,7 +49,7 @@ $key = 'DyioS5vct4fyqbjjr7Yno8dUFALYjAZe0JP3yR65aCNdtbjk92F9gxU1yDAVR7QS';
 //Instance of Transport class
 //$transport = new Recommender\Api\Transport\Transport();
 $transport = new Recommender\Api\Transport\Batch();
-$transport->setBatchSize(10);
+$transport->setBatchSize(1000);
 $transport->setDebug(false);
 //$transport->setBatchFileStorePath(__DIR__.'/store/');
 

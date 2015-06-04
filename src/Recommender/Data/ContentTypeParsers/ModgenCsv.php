@@ -218,13 +218,13 @@ class ModgenCsv
                             $this->apiClient->addProduct($parsedLine, 'id');
                             break;
                     }
-                //}
+                //r}
 
                 //Discontinued
                 //$this->addToCsv(self::parseCsvLine($this->getLine(),$structure));
             }
-            $this->setLine($line);
-            //$this->setLine(utf8_encode($line));
+            //$this->setLine($line);
+            $this->setLine(utf8_encode($line));
 
         } else {
             $this->line .= $line;

@@ -75,6 +75,7 @@ class Parser
      */
     public function parseModgenXml($fileName, Client $apiClient)
     {
+
         libxml_use_internal_errors(true);
 
         $xml = file_get_contents($fileName);
@@ -99,7 +100,8 @@ class Parser
                     $attributes = array('id' => '', 'name' => '', 'description' => '', 'price' => 0, 'available' => true);
                     foreach ($i->attributes as $attr) {
                         //$attributes[$attr->nodeName] = Encoding::toUTF8($attr->nodeValue);
-                        $attributes[$attr->nodeName] = utf8_decode($attr->nodeValue);
+                        $attributes[$attr->nodeName] = $attr->nodeValue;
+                        //$attributes[$attr->nodeName] = utf8_decode($attr->nodeValue);
                     }
                     //print_r($attributes)."\n";
                     $apiClient->addProduct($attributes, 'id');
